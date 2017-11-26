@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="mq-client" />
+        <module name="mq-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="mq-client" target="1.8" />
+      <module name="mq-server" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -3,7 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/mq-client/mq-client.iml" filepath="$PROJECT_DIR$/mq-client/mq-client.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/mq-dev.iml" filepath="$PROJECT_DIR$/.idea/mq-dev.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mq-client/mq-client.iml" filepath="$PROJECT_DIR$/mq-client/mq-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mq-server/mq-server.iml" filepath="$PROJECT_DIR$/mq-server/mq-server.iml" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+     http://www.springframework.org/schema/rabbit
+     http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!--连接A的连接信息-->
+    <rabbit:connection-factory id="connectionFactory" host="" username="" password="" port="5672" virtual-host="vhost_zhao" />
+
+    <rabbit:admin id="connectAdmin" connection-factory="connectionFactory" />
+
+    <!-- 队列my_queue 绑定key=yellow -->
+    <rabbit:queue name="my_queue" declared-by="connectAdmin" durable="true" auto-delete="false" exclusive="false" />
+
+    <rabbit:direct-exchange name="my_exchange" durable="true" auto-delete="false" declared-by="connectAdmin">
+        <rabbit:bindings>
+            <rabbit:binding queue="my_queue" key="yellow" />
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!--队列my_queue_2 绑定key=blue-->
+    <rabbit:queue name="my_queue_2" declared-by="connectAdmin" durable="true" auto-delete="false" exclusive="false" />
+
+    <rabbit:direct-exchange name="my_exchange" durable="true" auto-delete="false" declared-by="connectAdmin">
+        <rabbit:bindings>
+            <rabbit:binding queue="my_queue_2" key="blue" />
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+
+    <!--连接B的连接信息-->
+    <rabbit:connection-factory id="connectionFactory2" host="" username="" password="" port="" virtual-host="" />
+
+    <rabbit:admin id="connectAdmin2" connection-factory="connectionFactory2" />
+
+    <!--队列my_queue_3 绑定以color.开头的消息-->
+    <rabbit:queue name="my_queue_3" durable="true" auto-delete="false" exclusive="false" declared-by="connectAdmin2" />
+
+    <rabbit:topic-exchange name="my_exchange_2" durable="true" auto-delete="false" declared-by="connectAdmin2">
+        <rabbit:bindings>
+            <rabbit:binding pattern="color.*" queue="my_queue_3" />
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+
+    <!--三个消息消费者 处理不同队列的消息 yellow和blue处理key=yellow、blue的消息 color处理color.*的消息-->
+    <bean id="yellowConsumer" class="com.mq.server.consumer.YellowConsumer" />
+    <bean id="blueConsumer" class="com.mq.server.consumer.BlueConsumer" />
+    <bean id="colorConsumer" class="com.mq.server.consumer.ColorConsumer" />
+
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener ref="yellowConsumer" queues="my_queue" />
+        <rabbit:listener ref="blueConsumer" queues="my_queue_2" />
+    </rabbit:listener-container>
+
+    <rabbit:listener-container connection-factory="connectionFactory2">
+        <rabbit:listener ref="colorConsumer" queues="my_queue_3" />
+    </rabbit:listener-container>
+
+    <!--定义template用于消息数据的发送和接收-->
+    <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory" exchange="my_exchange" />
+    <rabbit:template id="rabbitTemplate2" connection-factory="connectionFactory2" exchange="my_exchange_2" />
+
+</beans>
